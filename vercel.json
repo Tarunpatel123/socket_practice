@@ -2,5 +2,18 @@
   "version": 2,
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
-  ]
+  ],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": [
+        "routes/**",
+        "controllers/**",
+        "services/**",
+        "models/**",
+        "config/**",
+        "utils/**",
+        "middleware/**"
+      ]
+    }
+  }
 }
