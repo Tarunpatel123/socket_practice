@@ -17,14 +17,14 @@ app.use((req, res, next) => {
 });
 
 // Root check endpoint
-app.get("/", (req, res) => {
+app.get(["/", "/api"], (req, res) => {
   res.json({
     message: "Auth API is running",
   });
 });
 
 // Debug endpoint to inspect route loading on Vercel
-app.get("/debug", (req, res) => {
+app.get(["/debug", "/api/debug"], (req, res) => {
   res.json({
     routesListType: typeof routesList,
     isArray: Array.isArray(routesList),
