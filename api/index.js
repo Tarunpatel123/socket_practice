@@ -23,11 +23,15 @@ app.get("/", (req, res) => {
   });
 });
 
+console.log(`Number of resolved routes: ${resolvedRoutes.length}`);
+
 // Dynamic routes mapper
 resolvedRoutes.forEach((route) => {
   const method = route.method.toLowerCase();
   const path = route.path;
   const middlewares = route.middlewares || [];
+
+  console.log(`Mapping route: ${method.toUpperCase()} ${path}`);
 
   app[method](path, ...middlewares, async (req, res, next) => {
     try {
