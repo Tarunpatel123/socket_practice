@@ -1,0 +1,54 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: tarunpatel1212
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: socket
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  environment:
+    DB_USERNAME: ${env:DB_USERNAME, "root"}
+    DB_PASSWORD: ${env:DB_PASSWORD, "root"}
+    DB_NAME: ${env:DB_NAME, "chat_auth"}
+    DB_NAME_TEST: ${env:DB_NAME_TEST, "chat_auth_test"}
+    DB_HOST: ${env:DB_HOST, "localhost"}
+    DB_DIALECT: ${env:DB_DIALECT, "mysql"}
+    JWT_SECRET: ${env:JWT_SECRET, "dev-secret-change-me"}
+    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN, "1h"}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - OPTIONS
+  # Uncomment to easily set up a custom domain. Read the docs for more details:
+  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
+  # domain: api.example.com
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  auth:
+    handler: handler.auth
+    events:
+      - httpApi:
+          path: /auth/register
+          method: post
+      - httpApi:
+          path: /auth/login
+          method: post
+      - httpApi:
+          path: /auth/logout
+          method: post
+
+plugins:
+  - serverless-offline
