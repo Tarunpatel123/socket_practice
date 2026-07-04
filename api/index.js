@@ -2,7 +2,8 @@
 
 const express = require("express");
 const cors = require("cors");
-const routes = require("../routes");
+const routesList = require("../routes/index.js");
+const resolvedRoutes = Array.isArray(routesList) ? routesList : (routesList.default || []);
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
 });
 
 // Dynamic routes mapper
-routes.forEach((route) => {
+resolvedRoutes.forEach((route) => {
   const method = route.method.toLowerCase();
   const path = route.path;
   const middlewares = route.middlewares || [];
