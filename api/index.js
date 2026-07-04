@@ -2,13 +2,13 @@
 
 const express = require("express");
 const cors = require("cors");
-const routesList = require("../routes/index.js");
-const authRoutesDirect = require("../routes/authRoutes.js");
+const routesList = require("./routes/index.js");
+const authRoutesDirect = require("./routes/authRoutes.js");
 
 let authController = null;
 let authControllerError = null;
 try {
-  authController = require("../controllers/authController.js");
+  authController = require("./controllers/authController.js");
 } catch (err) {
   authControllerError = {
     message: err.message,
