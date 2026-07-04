@@ -26,6 +26,8 @@ app.get("/", (req, res) => {
 console.log(`Number of resolved routes: ${resolvedRoutes.length}`);
 
 // Dynamic routes mapper
+const apiRouter = express.Router();
+
 resolvedRoutes.forEach((route) => {
   const method = route.method.toLowerCase();
   const path = route.path;
@@ -33,7 +35,7 @@ resolvedRoutes.forEach((route) => {
 
   console.log(`Mapping route: ${method.toUpperCase()} ${path}`);
 
-  app[method](path, ...middlewares, async (req, res, next) => {
+  apiRouter[method](path, ...middlewares, async (req, res, next) => {
     try {
       if (route.successStatus) {
         res.status(route.successStatus);
@@ -44,6 +46,9 @@ resolvedRoutes.forEach((route) => {
     }
   });
 });
+
+app.use("/", apiRouter);
+app.use("/api", apiRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
