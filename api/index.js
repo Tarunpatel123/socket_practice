@@ -4,7 +4,18 @@ const express = require("express");
 const cors = require("cors");
 const routesList = require("../routes/index.js");
 const authRoutesDirect = require("../routes/authRoutes.js");
-const authController = require("../controllers/authController.js");
+
+let authController = null;
+let authControllerError = null;
+try {
+  authController = require("../controllers/authController.js");
+} catch (err) {
+  authControllerError = {
+    message: err.message,
+    stack: err.stack
+  };
+}
+
 const resolvedRoutes = Array.isArray(routesList) ? routesList : (routesList.default || []);
 
 const app = express();
@@ -35,9 +46,10 @@ app.get(["/debug", "/api/debug"], (req, res) => {
     authRoutesDirectKeys: Object.keys(authRoutesDirect || {}),
     authControllerType: typeof authController,
     authControllerKeys: Object.keys(authController || {}),
-    registerType: typeof authController.register,
-    loginType: typeof authController.login,
-    logoutType: typeof authController.logout,
+    authControllerError: authControllerError,
+    registerType: typeof (authController || {}).register,
+    loginType: typeof (authController || {}).login,
+    logoutType: typeof (authController || {}).logout,
     resolvedRoutesLength: resolvedRoutes.length
   });
 });
