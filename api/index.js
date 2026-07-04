@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const routesList = require("../routes/index.js");
 const authRoutesDirect = require("../routes/authRoutes.js");
+const authController = require("../controllers/authController.js");
 const resolvedRoutes = Array.isArray(routesList) ? routesList : (routesList.default || []);
 
 const app = express();
@@ -31,10 +32,13 @@ app.get(["/debug", "/api/debug"], (req, res) => {
     isArray: Array.isArray(routesList),
     routesListKeys: Object.keys(routesList || {}),
     authRoutesDirectType: typeof authRoutesDirect,
-    authRoutesDirectIsArray: Array.isArray(authRoutesDirect),
     authRoutesDirectKeys: Object.keys(authRoutesDirect || {}),
-    resolvedRoutesLength: resolvedRoutes.length,
-    resolvedRoutes: resolvedRoutes.map(r => ({ method: r.method, path: r.path }))
+    authControllerType: typeof authController,
+    authControllerKeys: Object.keys(authController || {}),
+    registerType: typeof authController.register,
+    loginType: typeof authController.login,
+    logoutType: typeof authController.logout,
+    resolvedRoutesLength: resolvedRoutes.length
   });
 });
 
