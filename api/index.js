@@ -23,6 +23,17 @@ app.get("/", (req, res) => {
   });
 });
 
+// Debug endpoint to inspect route loading on Vercel
+app.get("/debug", (req, res) => {
+  res.json({
+    routesListType: typeof routesList,
+    isArray: Array.isArray(routesList),
+    routesListKeys: Object.keys(routesList || {}),
+    resolvedRoutesLength: resolvedRoutes.length,
+    resolvedRoutes: resolvedRoutes.map(r => ({ method: r.method, path: r.path }))
+  });
+});
+
 console.log(`Number of resolved routes: ${resolvedRoutes.length}`);
 
 // Dynamic routes mapper
