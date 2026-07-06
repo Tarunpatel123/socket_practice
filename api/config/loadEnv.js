@@ -58,7 +58,9 @@ function parseEnvLine(line) {
   return { key, value };
 }
 
-function loadEnvFile(envFilePath = path.resolve(__dirname, "..", ".env")) {
+function loadEnvFile(
+  envFilePath = path.resolve(__dirname, "..", "..", ".env"),
+) {
   if (loaded || process.env.NODE_ENV === "production") {
     return {};
   }
