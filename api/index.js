@@ -58,15 +58,43 @@ app.get(["/", "/api"], (req, res) => {
 //   });
 // });
 app.get("/debug", (req, res) => {
-  const authRoutes = require("./routes/authRoutes");
-  const authController = require("./controllers/authController");
+  let authRoutes;
+  let authController;
+
+  try {
+    authRoutes = require("./routes/authRoutes");
+  } catch (e) {
+    authRoutes = {
+      error: e.message,
+      stack: e.stack,
+    };
+  }
+
+  try {
+    authController = require("./controllers/authController");
+  } catch (e) {
+    authController = {
+      error: e.message,
+      stack: e.stack,
+    };
+  }
 
   res.json({
     cwd: process.cwd(),
+    dirname: __dirname,
+
+    authRoutesPath: require.resolve("./routes/authRoutes"),
+    authControllerPath: require.resolve("./controllers/authController"),
+
     authRoutes,
     authController,
-    authControllerKeys: Object.keys(authController),
-    authRoutesIsArray: Array.isArray(authRoutes),
+
+    authRoutesType: typeof authRoutes,
+    authControllerType: typeof authController,
+
+    authRoutesKeys: Object.keys(authRoutes || {}),
+    authControllerKeys: Object.keys(authController || {}),
+
     authRoutesLength: Array.isArray(authRoutes) ? authRoutes.length : null,
   });
 });
