@@ -12,11 +12,13 @@ try {
 } catch (err) {
   authControllerError = {
     message: err.message,
-    stack: err.stack
+    stack: err.stack,
   };
 }
 
-const resolvedRoutes = Array.isArray(routesList) ? routesList : (routesList.default || []);
+const resolvedRoutes = Array.isArray(routesList)
+  ? routesList
+  : routesList.default || [];
 
 const app = express();
 
@@ -25,7 +27,9 @@ app.use(express.json());
 
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} URL: "${req.url}" | PATH: "${req.path}" | BASE: "${req.baseUrl}" | ORIGINAL: "${req.originalUrl}"`);
+  console.log(
+    `[${new Date().toISOString()}] ${req.method} URL: "${req.url}" | PATH: "${req.path}" | BASE: "${req.baseUrl}" | ORIGINAL: "${req.originalUrl}"`,
+  );
   next();
 });
 
@@ -37,20 +41,33 @@ app.get(["/", "/api"], (req, res) => {
 });
 
 // Debug endpoint to inspect route loading on Vercel
-app.get(["/debug", "/api/debug"], (req, res) => {
+// app.get(["/debug", "/api/debug"], (req, res) => {
+//   res.json({
+//     routesListType: typeof routesList,
+//     isArray: Array.isArray(routesList),
+//     routesListKeys: Object.keys(routesList || {}),
+//     authRoutesDirectType: typeof authRoutesDirect,
+//     authRoutesDirectKeys: Object.keys(authRoutesDirect || {}),
+//     authControllerType: typeof authController,
+//     authControllerKeys: Object.keys(authController || {}),
+//     authControllerError: authControllerError,
+//     registerType: typeof (authController || {}).register,
+//     loginType: typeof (authController || {}).login,
+//     logoutType: typeof (authController || {}).logout,
+//     resolvedRoutesLength: resolvedRoutes.length
+//   });
+// });
+app.get("/debug", (req, res) => {
+  const authRoutes = require("./routes/authRoutes");
+  const authController = require("./controllers/authController");
+
   res.json({
-    routesListType: typeof routesList,
-    isArray: Array.isArray(routesList),
-    routesListKeys: Object.keys(routesList || {}),
-    authRoutesDirectType: typeof authRoutesDirect,
-    authRoutesDirectKeys: Object.keys(authRoutesDirect || {}),
-    authControllerType: typeof authController,
-    authControllerKeys: Object.keys(authController || {}),
-    authControllerError: authControllerError,
-    registerType: typeof (authController || {}).register,
-    loginType: typeof (authController || {}).login,
-    logoutType: typeof (authController || {}).logout,
-    resolvedRoutesLength: resolvedRoutes.length
+    cwd: process.cwd(),
+    authRoutes,
+    authController,
+    authControllerKeys: Object.keys(authController),
+    authRoutesIsArray: Array.isArray(authRoutes),
+    authRoutesLength: Array.isArray(authRoutes) ? authRoutes.length : null,
   });
 });
 
