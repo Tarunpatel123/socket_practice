@@ -2,13 +2,31 @@
 
 const express = require("express");
 const cors = require("cors");
-const routesList = require("./routes/index.js");
-const authRoutesDirect = require("./routes/authRoutes.js");
+
+function requireLocalModule(basePath) {
+  const candidates = [`${basePath}.js`, `${basePath}.cjs`, basePath];
+  let lastError = null;
+  for (const modulePath of candidates) {
+    try {
+      return require(modulePath);
+    } catch (err) {
+      if (err.code === "MODULE_NOT_FOUND" && err.message.includes(modulePath)) {
+        lastError = err;
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError || new Error(`Cannot find local module ${basePath}`);
+}
+
+const routesList = requireLocalModule("./routes/authRoutes");
+const authRoutesDirect = requireLocalModule("./routes/authRoutes");
 
 let authController = null;
 let authControllerError = null;
 try {
-  authController = require("./controllers/authController.js");
+  authController = requireLocalModule("./controllers/authController");
 } catch (err) {
   authControllerError = {
     message: err.message,
@@ -20,7 +38,32 @@ const resolvedRoutes = Array.isArray(routesList)
   ? routesList
   : routesList.default || [];
 
+console.log(
+  "DEBUG routesList:",
+  typeof routesList,
+  "isArray:",
+  Array.isArray(routesList),
+  "length:",
+  routesList?.length,
+);
+console.log(
+  "DEBUG authRoutesDirect:",
+  typeof authRoutesDirect,
+  "isArray:",
+  Array.isArray(authRoutesDirect),
+  "length:",
+  authRoutesDirect?.length,
+);
+
 const app = express();
+
+function resolvePath(path) {
+  try {
+    return require.resolve(path);
+  } catch (err) {
+    return err.message;
+  }
+}
 
 app.use(cors());
 app.use(express.json());
@@ -62,7 +105,7 @@ app.get("/debug", (req, res) => {
   let authController;
 
   try {
-    authRoutes = require("./routes/authRoutes");
+    authRoutes = requireLocalModule("./routes/authRoutes");
   } catch (e) {
     authRoutes = {
       error: e.message,
@@ -71,7 +114,7 @@ app.get("/debug", (req, res) => {
   }
 
   try {
-    authController = require("./controllers/authController");
+    authController = requireLocalModule("./controllers/authController");
   } catch (e) {
     authController = {
       error: e.message,
@@ -83,8 +126,8 @@ app.get("/debug", (req, res) => {
     cwd: process.cwd(),
     dirname: __dirname,
 
-    authRoutesPath: require.resolve("./routes/authRoutes"),
-    authControllerPath: require.resolve("./controllers/authController"),
+    authRoutesPath: resolvePath("./routes/authRoutes"),
+    authControllerPath: resolvePath("./controllers/authController"),
 
     authRoutes,
     authController,
