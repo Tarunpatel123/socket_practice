@@ -91,7 +91,7 @@ async function dispatch(event, availableRoutes = routes) {
       status(code) {
         this.statusCode = code;
         return this;
-      }
+      },
     };
 
     let nextCalled = false;
@@ -107,7 +107,10 @@ async function dispatch(event, availableRoutes = routes) {
       }
     }
 
-    if (res._jsonPayload === undefined && (!route.middlewares || route.middlewares.length === 0 || nextCalled)) {
+    if (
+      res._jsonPayload === undefined &&
+      (!route.middlewares || route.middlewares.length === 0 || nextCalled)
+    ) {
       await route.handler(req, res);
     }
 
@@ -126,11 +129,16 @@ async function dispatch(event, availableRoutes = routes) {
       });
     }
 
-    console.error("Unhandled auth API error", {
-      error,
-      path: request.path,
-      method: request.method,
-    });
+    // console.error("Unhandled auth API error", {
+    //   error,
+    //   path: request.path,
+    //   method: request.method,
+    // });
+    console.error("===== ERROR START =====");
+    console.error(error);
+    console.error(error.stack);
+    console.error("Request:", request);
+    console.error("===== ERROR END =====");
 
     return jsonResponse(500, {
       success: false,
