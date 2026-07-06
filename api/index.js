@@ -122,12 +122,7 @@ resolvedRoutes.forEach((route) => {
     }
   });
 });
-app.post("/auth/register", (req, res) => {
-  res.json({
-    success: true,
-    message: "Hardcoded route is working",
-  });
-});
+
 
 app.use("/", apiRouter);
 app.use("/api", apiRouter);
